@@ -1,0 +1,3 @@
+transaction_id,transaction_date,description,amount,transaction_type,category,payment_method
+U001,2026-03-01,肯德基午餐,45.00,支出,餐饮,微信
+U002,2026-03-02,地铁出行,5.00,支出,交通,支付宝

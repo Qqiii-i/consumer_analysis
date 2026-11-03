@@ -1,0 +1,20 @@
+[
+    {
+        "transaction_id": "J001",
+        "transaction_date": "2026-03-01",
+        "description": "午餐",
+        "amount": 35,
+        "transaction_type": "支出",
+        "category": "餐饮",
+        "payment_method": "微信"
+    },
+    {
+        "transaction_id": "J002",
+        "transaction_date": "2026-03-02",
+        "description": "工资",
+        "amount": 5000,
+        "transaction_type": "收入",
+        "category": "收入",
+        "payment_method": "银行卡"
+    }
+]
