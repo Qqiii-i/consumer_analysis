@@ -8,7 +8,8 @@ from algorithms.trend_analysis import (
     calculate_moving_average,
     calculate_expense_by_period,
     calculate_expense_frequency,
-    calculate_expense_distribution
+    calculate_expense_distribution,
+    predict_next_month_expense
 )
 
 
@@ -224,6 +225,17 @@ def show_statistics(data):
             x_label="月份",
             y_label="消费金额（元）"
         )
+        # 下个月消费预测
+        if len(monthly_trend) >= 3:
+            prediction = predict_next_month_expense(monthly_trend)
+
+            st.subheader("下个月消费预测")
+            st.metric(
+                "预计消费金额",
+                f"¥{prediction:,.2f}"
+            )
+        else:
+            st.info("至少需要3个月的消费数据才能预测下个月支出。")
 
     else:
         moving_average_data = pd.DataFrame(

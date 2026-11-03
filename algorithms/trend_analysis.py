@@ -52,6 +52,19 @@ def calculate_moving_average(data, window=2):
 
     return result
 
+def predict_next_month_expense(data):
+    """
+    使用最近3个月的消费金额预测下个月支出。
+    """
+    if len(data) < 3:
+        raise ValueError("至少需要3个月的消费数据才能进行预测")
+
+    recent_expenses = data["total_expense"].tail(3)
+
+    prediction = recent_expenses.mean()
+
+    return round(prediction, 2)
+
 def calculate_expense_by_period(data, period="D"):
     """
     按指定时间周期统计消费支出。
