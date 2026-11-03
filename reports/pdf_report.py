@@ -17,9 +17,16 @@ from reportlab.platypus import (
 )
 
 # 注册中文字体
-pdfmetrics.registerFont(
-    TTFont("SimHei", r"C:\Windows\Fonts\simhei.ttf")
+import os
+
+font_path = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    "assets",
+    "fonts",
+    "simhei.ttf"
 )
+
+pdfmetrics.registerFont(TTFont("SimHei", font_path))
 
 
 def create_pdf_report(
