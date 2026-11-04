@@ -73,7 +73,46 @@ def show_statistics(data):
     else:
         st.info("暂无消费类别数据，无法生成占比图。")
 
-    # 消费趋势统计
+    # 消费结构随时间变化
+    st.divider()
+    st.subheader("消费结构随时间变化")
+    
+    monthly_category = expense_data.copy()
+
+    monthly_category["month"] = (
+        pd.to_datetime(monthly_category["transaction_date"])
+        .dt.to_period("M")
+        .astype(str)
+    )
+
+    monthly_category = (
+        monthly_category.groupby(
+            ["month", "category"]
+        )["amount"]
+        .sum()
+        .reset_index()
+    )
+
+    if not monthly_category.empty:
+        amount_fig = px.line(
+            monthly_category,
+            x="month",
+            y="amount",
+            color="category",
+            markers=True,
+            title="各类别月度消费金额变化",
+            labels={
+                "month": "月份",
+                "amount": "消费金额（元）",
+                "category": "消费类别"
+            }
+        )
+
+        st.plotly_chart(amount_fig, width="stretch")
+    else:
+        st.info("暂无数据，无法分析消费结构变化。")
+
+     # 消费趋势统计
     st.divider()
     st.subheader("消费趋势统计")
 
