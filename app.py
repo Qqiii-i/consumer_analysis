@@ -3,6 +3,7 @@ import pandas as pd
 from reports.pdf_report import create_pdf_report
 from reports.excel_report import create_excel_report
 from ui.statistics import show_statistics
+from ui.forecast import show_forecast
 from ui.data_import import show_data_import
 from ui.economics import show_economics
 from ui.anomaly import show_anomaly_detection
@@ -94,6 +95,10 @@ with st.expander("📊 消费统计与趋势分析", expanded=True):
         line_fig,
         bar_fig
     ) = show_statistics(analysis_data)
+
+# 消费预测
+with st.expander("🔮 消费预测", expanded=False):
+    show_forecast(analysis_data)
 
 # 异常消费检测
 with st.expander("🔍 异常消费检测", expanded=True):

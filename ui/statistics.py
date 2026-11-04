@@ -1,15 +1,12 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-
 from algorithms.trend_analysis import (
     calculate_monthly_trend,
     calculate_moving_average,
     calculate_expense_by_period,
     calculate_expense_frequency,
     calculate_expense_distribution,
-    predict_next_month_expense
 )
 
 
@@ -201,10 +198,7 @@ def show_statistics(data):
         else:
             st.info("当前没有可用于金额分布统计的支出数据。")
 
-    # 移动平均趋势分析
-    st.divider()
-    st.subheader("消费移动平均分析")
-
+    # 保留移动平均数据，供报告导出使用
     monthly_trend = calculate_monthly_trend(data)
 
     if len(monthly_trend) >= 2:
@@ -212,37 +206,10 @@ def show_statistics(data):
             monthly_trend,
             window=2
         )
-
-        st.dataframe(
-            moving_average_data,
-            width="stretch"
-        )
-
-        st.line_chart(
-            moving_average_data,
-            x="month",
-            y=["total_expense", "moving_average"],
-            x_label="月份",
-            y_label="消费金额（元）"
-        )
-        # 下个月消费预测
-        if len(monthly_trend) >= 3:
-            prediction = predict_next_month_expense(monthly_trend)
-
-            st.subheader("下个月消费预测")
-            st.metric(
-                "预计消费金额",
-                f"¥{prediction:,.2f}"
-            )
-        else:
-            st.info("至少需要3个月的消费数据才能预测下个月支出。")
-
     else:
         moving_average_data = pd.DataFrame(
             columns=["month", "total_expense", "moving_average"]
         )
-
-        st.info("月度数据不足2个月，暂时无法进行移动平均分析。")
 
     return (
         category_stats,
