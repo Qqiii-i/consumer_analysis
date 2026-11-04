@@ -5,7 +5,7 @@ from reports.excel_report import create_excel_report
 from ui.statistics import show_statistics
 from ui.forecast import show_forecast
 from ui.data_import import show_data_import
-from ui.economics import show_economics
+from ui.economics import show_economics,show_cpi_analysis
 from ui.anomaly import show_anomaly_detection
 from ui.classification import show_classification
 from ui.clustering import show_clustering
@@ -84,6 +84,10 @@ analysis_data["category"] = classified_data["final_category"].values
 # 经济学指标分析
 with st.expander("📈 经济学指标分析", expanded=True):
     engel, apc, saving_rate, mpc = show_economics(analysis_data)
+
+# CPI 物价指数与个人消费分析
+with st.expander("📉 CPI物价指数与个人消费分析", expanded=True):
+    show_cpi_analysis(analysis_data)
 
 # 消费统计与趋势分析
 with st.expander("📊 消费统计与趋势分析", expanded=True):
