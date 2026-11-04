@@ -5,7 +5,8 @@ from reports.excel_report import create_excel_report
 from ui.statistics import show_statistics
 from ui.forecast import show_forecast
 from ui.data_import import show_data_import
-from ui.economics import show_economics,show_cpi_analysis
+from ui.economics import show_economics
+from ui.economics import show_cpi_analysis
 from ui.anomaly import show_anomaly_detection
 from ui.classification import show_classification
 from ui.clustering import show_clustering

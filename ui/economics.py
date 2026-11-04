@@ -76,7 +76,7 @@ def show_cpi_analysis(data):
         st.info("个人账单与 CPI 数据没有重合月份，暂时无法比较。")
         return
 
-        # 将环比 CPI 转换为以首个月份为 100 的价格指数
+    # 将环比 CPI 转换为以首个月份为 100 的价格指数
     result = result.sort_values("month").reset_index(drop=True)
 
     result["cpi_index"] = 100.0
