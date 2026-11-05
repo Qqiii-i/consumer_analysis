@@ -34,6 +34,70 @@ def load_cpi_data():
 
     return cpi_data.sort_values("month").reset_index(drop=True)
 
+
+def calculate_expense_yoy(data):
+    """
+    计算个人消费支出同比增长率。
+    """
+    expense_data = data[
+        data["transaction_type"] == "支出"
+    ].copy()
+
+    expense_data["month"] = (
+        pd.to_datetime(
+            expense_data["transaction_date"],
+            errors="coerce"
+        )
+        .dt.to_period("M")
+    )
+
+    expense_data["amount"] = pd.to_numeric(
+        expense_data["amount"],
+        errors="coerce"
+    )
+
+    expense_data = expense_data.dropna(
+        subset=["month", "amount"]
+    )
+
+    monthly_expense = (
+        expense_data.groupby("month")["amount"]
+        .sum()
+        .reset_index()
+        .sort_values("month")
+    )
+
+    monthly_expense["last_year_amount"] = (
+        monthly_expense["month"].apply(
+            lambda month: monthly_expense.loc[
+                monthly_expense["month"] == month - 12,
+                "amount"
+            ].sum()
+            if (monthly_expense["month"] == month - 12).any()
+            else None
+        )
+    )
+
+    monthly_expense["yoy_growth"] = (
+        (
+            monthly_expense["amount"]
+            - monthly_expense["last_year_amount"]
+        )
+        / monthly_expense["last_year_amount"]
+        * 100
+    )
+
+    monthly_expense.loc[
+        monthly_expense["last_year_amount"] == 0,
+        "yoy_growth"
+    ] = None
+
+    monthly_expense["month"] = (
+        monthly_expense["month"].astype(str)
+    )
+
+    return monthly_expense
+
 def show_cpi_analysis(data):
     st.divider()
     st.subheader("CPI 物价指数与个人消费分析")
@@ -187,6 +251,38 @@ def show_economics(data):
     # 经济学指标分析
     st.divider()
     st.subheader("经济学指标分析")
+
+    # 个人消费支出同比增长率
+    st.write("### 个人消费支出同比增长率")
+
+    yoy_data = calculate_expense_yoy(data)
+
+    valid_yoy = yoy_data.dropna(
+        subset=["yoy_growth"]
+    )
+
+    if valid_yoy.empty:
+        st.info("暂无足够的去年同期数据，暂时无法计算同比增长率。")
+    else:
+        yoy_fig = px.bar(
+            valid_yoy,
+            x="month",
+            y="yoy_growth",
+            title="个人消费支出同比增长率",
+            labels={
+                "month": "月份",
+                "yoy_growth": "同比增长率（%）"
+            }
+        )
+
+        st.plotly_chart(yoy_fig, width="stretch")
+
+        st.dataframe(
+            yoy_data[
+                ["month", "amount", "last_year_amount", "yoy_growth"]
+            ],
+            width="stretch"
+        )
 
     engel = calculate_engel_coefficient(data)
     apc = calculate_average_propensity_to_consume(data)
