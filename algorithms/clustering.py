@@ -44,21 +44,31 @@ def cluster_transactions(data, n_clusters=3):
 
     return expense_data
 
+
 def summarize_clusters(data):
     """
-    统计各聚类组的消费特征。
+    统计各聚类组的消费金额和类别特征。
     """
     summary = (
-        data.groupby("cluster")["amount"]
-        .agg(["count", "mean", "sum"])
+        data.groupby("cluster")
+        .agg(
+            transaction_count=("amount", "count"),
+            average_amount=("amount", "mean"),
+            total_amount=("amount", "sum")
+        )
         .reset_index()
     )
 
-    summary.columns = [
-        "cluster",
-        "transaction_count",
-        "average_amount",
-        "total_amount"
-    ]
+    category_summary = (
+        data.groupby(["cluster", "category"])["amount"]
+        .sum()
+        .reset_index()
+    )
 
-    return summary
+    category_summary["category_ratio"] = (
+        category_summary["amount"]
+        / category_summary.groupby("cluster")["amount"].transform("sum")
+        * 100
+    )
+
+    return summary, category_summary

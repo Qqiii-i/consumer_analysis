@@ -33,8 +33,7 @@ def show_clustering(data):
             n_clusters=3
         )
 
-        cluster_summary = summarize_clusters(clustered_data)
-
+        cluster_summary, category_summary = summarize_clusters(clustered_data)
         silhouette = clustered_data["silhouette_score"].iloc[0]
 
         if silhouette is not None:
@@ -44,6 +43,60 @@ def show_clustering(data):
 
         st.write("各聚类组消费统计")
         st.dataframe(cluster_summary, width="stretch")
+
+        st.write("各聚类组交易笔数对比")
+
+        st.bar_chart(
+            cluster_summary,
+            x="cluster",
+            y="transaction_count"
+        )
+
+        st.write("各聚类组平均消费金额对比")
+
+        st.bar_chart(
+            cluster_summary,
+            x="cluster",
+            y="average_amount"
+        )
+
+        st.write("各聚类组消费类别统计")
+        st.dataframe(category_summary, width="stretch")
+
+        st.write("消费群体特征分析")
+
+        overall_average = clustered_data["amount"].mean()
+
+        for cluster_id in sorted(clustered_data["cluster"].unique()):
+            group = clustered_data[
+                clustered_data["cluster"] == cluster_id
+            ]
+
+            group_categories = category_summary[
+                category_summary["cluster"] == cluster_id
+            ]
+
+            dominant_category = group_categories.loc[
+                group_categories["category_ratio"].idxmax()
+            ]
+
+            average_amount = group["amount"].mean()
+            category_name = dominant_category["category"]
+            category_ratio = dominant_category["category_ratio"]
+
+            if average_amount > overall_average:
+                spending_level = "平均单笔消费金额较高"
+            elif average_amount < overall_average:
+                spending_level = "平均单笔消费金额较低"
+            else:
+                spending_level = "平均单笔消费金额接近整体水平"
+
+            st.markdown(
+                f"**Cluster {cluster_id}：** "
+                f"{spending_level}，主要消费类别为"
+                f" **{category_name}**，占该组消费金额的 "
+                f"**{category_ratio:.1f}%**。"
+            )
 
         st.write("消费记录所属聚类")
         st.dataframe(
