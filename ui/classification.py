@@ -1,9 +1,6 @@
 import streamlit as st
 import pandas as pd
-from algorithms.classifier import (
-    classify_transactions,
-    evaluate_classification
-)
+from algorithms.classifier import classify_transactions, evaluate_classification
 
 def show_classification(data):
 
@@ -18,7 +15,16 @@ def show_classification(data):
     if not data.empty:
 
         classified_data = classify_transactions(data)
-        evaluate_classification(classified_data)
+
+        model_accuracy = classified_data.attrs.get("model_accuracy")
+
+        if model_accuracy is not None:
+            st.metric(
+                "朴素贝叶斯测试集准确率",
+                f"{model_accuracy * 100:.2f}%"
+            )
+        else:
+            st.info("训练数据不足，暂时无法训练朴素贝叶斯模型。")
 
         # 初始化最终类别
         if "final_category" not in classified_data.columns:

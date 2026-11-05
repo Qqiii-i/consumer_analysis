@@ -1,5 +1,11 @@
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import train_test_split
+
+
+
 
 # 消费类别及对应关键词
 CATEGORY_KEYWORDS = {
@@ -46,6 +52,49 @@ CATEGORY_KEYWORDS = {
     ]
 }
 
+def train_nb_classifier(data):
+    """
+    使用 TF-IDF 和朴素贝叶斯训练消费分类模型。
+    """
+    train_data = data[
+        (data["transaction_type"] == "支出")
+        & data["description"].notna()
+        & data["category"].notna()
+        & (~data["category"].isin(["未分类", ""]))
+    ].copy()
+
+    train_data["description"] = (
+        train_data["description"].astype(str)
+    )
+
+    if len(train_data) < 10:
+        return None, None, None
+
+    if train_data["category"].nunique() < 2:
+        return None, None, None
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        train_data["description"],
+        train_data["category"],
+        test_size=0.2,
+        random_state=42,
+    )
+
+    vectorizer = TfidfVectorizer(
+        analyzer="char",
+        ngram_range=(1, 2)
+    )
+    X_train_tfidf = vectorizer.fit_transform(X_train)
+    X_test_tfidf = vectorizer.transform(X_test)
+
+    model = MultinomialNB()
+    model.fit(X_train_tfidf, y_train)
+
+    y_pred = model.predict(X_test_tfidf)
+
+    accuracy = accuracy_score(y_test, y_pred)
+
+    return model, vectorizer, accuracy
 
 def classify_transaction(description):
     """
@@ -68,13 +117,34 @@ def classify_transaction(description):
 
 def classify_transactions(data):
     """
-    对 DataFrame 中的交易描述进行批量分类。
+    使用 TF-IDF 和朴素贝叶斯进行批量消费分类。
     """
     result = data.copy()
 
-    result["predicted_category"] = result["description"].apply(
-        classify_transaction
+    # 先使用关键词方法进行基础分类
+    result["predicted_category"] = (
+        result["description"].apply(classify_transaction)
     )
+
+    # 训练朴素贝叶斯模型
+    model, vectorizer, accuracy = train_nb_classifier(data)
+
+    if model is not None:
+        expense_mask = result["transaction_type"] == "支出"
+
+        descriptions = (
+            result.loc[expense_mask, "description"]
+            .fillna("")
+            .astype(str)
+        )
+
+        features = vectorizer.transform(descriptions)
+
+        result.loc[expense_mask, "predicted_category"] = (
+            model.predict(features)
+        )
+
+    result.attrs["model_accuracy"] = accuracy
 
     return result
 
