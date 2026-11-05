@@ -1,6 +1,5 @@
-
 import pandas as pd
-
+import re
 
 def import_wechat_bill(uploaded_file):
     """
@@ -109,7 +108,7 @@ def import_wechat_bill(uploaded_file):
         amount,
         errors="coerce"
     )
-    
+
     # 根据微信账单的收/支字段识别交易类型
     income_expense = (
         data["收/支"]
@@ -127,8 +126,19 @@ def import_wechat_bill(uploaded_file):
 
     result["category"] = "未分类"
 
+    # 隐藏银行卡号后四位，保留银行名称和卡类型
     result["payment_method"] = (
-        data["支付方式"].fillna("未填写").astype(str).str.strip()
+        data["支付方式"]
+        .fillna("未填写")
+        .astype(str)
+        .str.strip()
+        .apply(
+            lambda x: re.sub(
+                r"\s*[（(]\s*\d{4}\s*[）)]",
+                "",
+                x
+            ).strip()
+        )
     )
 
     return result.reset_index(drop=True)
