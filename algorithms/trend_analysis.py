@@ -173,3 +173,112 @@ def calculate_expense_distribution(data, period="M"):
     )
 
     return result
+
+def generate_consumption_insights(data):
+    """
+    根据消费记录生成消费偏好与行为特征分析。
+    """
+
+    expense_data = data[
+        data["transaction_type"] == "支出"
+    ].copy()
+
+    expense_data["amount"] = pd.to_numeric(
+        expense_data["amount"],
+        errors="coerce"
+    )
+
+    expense_data["transaction_date"] = pd.to_datetime(
+        expense_data["transaction_date"],
+        errors="coerce"
+    )
+
+    expense_data = expense_data.dropna(
+        subset=["amount", "transaction_date", "category"]
+    )
+
+    expense_data = expense_data[
+        expense_data["amount"] > 0
+    ]
+
+    if expense_data.empty:
+        return ["暂无有效消费记录，无法进行消费行为分析。"]
+
+    insights = []
+
+    # 基本消费情况
+    total_expense = expense_data["amount"].sum()
+    transaction_count = len(expense_data)
+    average_amount = total_expense / transaction_count
+
+    insights.append(
+        f"累计消费 {total_expense:.2f} 元，共 {transaction_count} 笔，"
+        f"平均每笔消费 {average_amount:.2f} 元。"
+    )
+
+    # 消费金额最高的类别
+    category_amount = (
+        expense_data.groupby("category")["amount"]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+    main_category = category_amount.index[0]
+    main_ratio = category_amount.iloc[0] / total_expense * 100
+
+    insights.append(
+        f"消费金额最高的类别为「{main_category}」，"
+        f"占总消费的 {main_ratio:.2f}%。"
+    )
+
+    # 消费笔数最多的类别
+    category_count = (
+        expense_data.groupby("category")
+        .size()
+        .sort_values(ascending=False)
+    )
+
+    frequent_category = category_count.index[0]
+
+    insights.append(
+        f"交易笔数最多的类别为「{frequent_category}」，"
+        f"共消费 {category_count.iloc[0]} 笔。"
+    )
+
+    # 消费集中度：前三个消费类别的金额占比
+    top3_ratio = (
+        category_amount.head(3).sum()
+        / total_expense
+        * 100
+    )
+
+    insights.append(
+        f"消费金额排名前三的类别合计占总消费的 "
+        f"{top3_ratio:.2f}%，可用于观察消费集中程度。"
+    )
+
+    # 消费日期分布
+    weekday_names = {
+        0: "周一",
+        1: "周二",
+        2: "周三",
+        3: "周四",
+        4: "周五",
+        5: "周六",
+        6: "周日"
+    }
+
+    weekday_count = (
+        expense_data["transaction_date"]
+        .dt.dayofweek
+        .value_counts()
+    )
+
+    busiest_weekday = weekday_names[weekday_count.idxmax()]
+
+    insights.append(
+        f"账单记录中消费最频繁的日期为{busiest_weekday}，"
+        f"共 {weekday_count.max()} 笔。"
+    )
+
+    return insights

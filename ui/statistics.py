@@ -7,6 +7,7 @@ from algorithms.trend_analysis import (
     calculate_expense_by_period,
     calculate_expense_frequency,
     calculate_expense_distribution,
+    generate_consumption_insights
 )
 
 
@@ -236,6 +237,15 @@ def show_statistics(data):
             st.plotly_chart(distribution_fig, width="stretch")
         else:
             st.info("当前没有可用于金额分布统计的支出数据。")
+
+    # 消费偏好与行为特征分析
+    st.divider()
+    st.subheader("消费偏好与行为特征分析")
+
+    insights = generate_consumption_insights(data)
+
+    for insight in insights:
+        st.write(f"- {insight}")
 
     # 保留移动平均数据，供报告导出使用
     monthly_trend = calculate_monthly_trend(data)
