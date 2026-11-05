@@ -16,3 +16,5 @@ __pycache__/
 data/raw/*
 data/processed/*
 project_notes/
+# 人工分类日志（包含用户消费信息）
+logs/

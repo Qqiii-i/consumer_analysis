@@ -1,6 +1,54 @@
 import streamlit as st
 import pandas as pd
 from algorithms.classifier import classify_transactions, evaluate_classification
+from pathlib import Path
+from datetime import datetime
+
+def save_classification_log(records):
+    """
+    保存人工修改过的消费分类记录。
+    不记录交易单号等敏感信息。
+    """
+
+    if records.empty:
+        return
+
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+
+    log_file = log_dir / "classification_log.csv"
+
+    log_data = records.copy()
+    log_data["修改时间"] = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    log_data = log_data.rename(columns={
+        "description": "交易描述",
+        "predicted_category": "原自动分类",
+        "final_category": "人工修改分类"
+    })
+
+    log_data = log_data[
+        ["修改时间", "交易描述", "原自动分类", "人工修改分类"]
+    ]
+
+    log_data.to_csv(
+        log_file,
+        mode="a",
+        header=not log_file.exists(),
+        index=False,
+        encoding="utf-8-sig"
+    )
+
+def reset_classification():
+    st.session_state["classification_edits"] = {}
+
+    st.session_state["classification_editor_version"] = (
+        st.session_state.get("classification_editor_version", 0) + 1
+    )
+
+    st.session_state["classification_reset_triggered"] = True
 
 def show_classification(data):
 
@@ -77,12 +125,34 @@ def show_classification(data):
             ],
             hide_index=True,
             width="stretch",
-            key="classification_editor"
+            key=f"classification_editor_{st.session_state.get('classification_editor_version', 0)}"
         )
-        if st.button("恢复全部自动分类"):
-            st.session_state["classification_edits"] = {}
-            st.rerun()
-            
+
+        st.button(
+            "恢复全部自动分类",
+            on_click=reset_classification
+        )
+
+        # 检测本次新增的人工分类修改
+        reset_triggered = st.session_state.pop(
+            "classification_reset_triggered", False
+        )
+
+        if not reset_triggered:
+
+            changed_mask = (
+                edited_data["final_category"].astype(str)
+                != classified_data["final_category"].astype(str)
+            )
+
+            changed_records = edited_data.loc[
+                changed_mask,
+                ["description", "predicted_category", "final_category"]
+            ].copy()
+
+            if not changed_records.empty:
+                save_classification_log(changed_records)
+       
         # 保存人工修改结果
         for _, row in edited_data.iterrows():
             st.session_state["classification_edits"][
