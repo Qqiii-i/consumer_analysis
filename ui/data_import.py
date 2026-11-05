@@ -46,6 +46,10 @@ def show_data_import():
     )
 
     if uploaded_file is not None:
+        if uploaded_file.size == 0:
+            st.error("上传的账单文件为空，请重新选择文件。")
+            st.stop()
+
         try:
             if uploaded_file.name.endswith(".xlsx"):
                 data = pd.read_excel(
@@ -77,6 +81,10 @@ def show_data_import():
                 if column not in data.columns
             ]
 
+            if data.empty:
+                st.error("账单文件中没有交易记录，请上传包含实际消费数据的文件。")
+                st.stop()
+
             if missing_columns:
                 st.error(
                     f"账单缺少必要字段：{', '.join(missing_columns)}"
@@ -105,6 +113,17 @@ def show_data_import():
     # 数据清洗
     original_count = len(data)
 
+    # 清洗前检查异常日期和金额
+    invalid_dates = pd.to_datetime(
+        data["transaction_date"],
+        errors="coerce"
+    ).isna().sum()
+
+    invalid_amounts = pd.to_numeric(
+        data["amount"],
+        errors="coerce"
+    ).isna().sum()
+
     data = clean_transactions(data)
     data = remove_invalid_transactions(data)
 
@@ -117,6 +136,8 @@ def show_data_import():
     st.write(f"数据清洗前：{original_count} 条")
     st.write(f"数据清洗后：{cleaned_count} 条")
     st.write(f"清理无效记录：{original_count - cleaned_count} 条")
+    st.write(f"清洗前异常日期：{invalid_dates} 条")
+    st.write(f"清洗前异常金额：{invalid_amounts} 条")
 
     # 数据质量检查
     quality_report = check_data_quality(data)
