@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-
+from processors.wechat_importer import import_wechat_bill
 from processors.cleaner import (
     clean_transactions,
     check_data_quality,
@@ -51,20 +51,29 @@ def show_data_import():
             st.stop()
 
         try:
-            if uploaded_file.name.endswith(".xlsx"):
+            if uploaded_file.name.startswith("微信支付账单流水文件") and uploaded_file.name.endswith(".xlsx"):
+                data = import_wechat_bill(uploaded_file)
+                data_source = "微信支付账单"
+
+            elif uploaded_file.name.endswith(".xlsx"):
                 data = pd.read_excel(
                     uploaded_file,
                     engine="openpyxl"
                 )
+                data_source = "用户上传的账单"
 
             elif uploaded_file.name.endswith(".json"):
                 data = pd.read_json(uploaded_file)
+                data_source = "用户上传的账单"
+
 
             else:
                 data = pd.read_csv(
                     uploaded_file,
                     encoding="utf-8-sig"
                 )
+                data_source = "用户上传的账单"
+
 
             required_columns = [
                 "transaction_id",
@@ -90,8 +99,6 @@ def show_data_import():
                     f"账单缺少必要字段：{', '.join(missing_columns)}"
                 )
                 st.stop()
-
-            data_source = "用户上传的账单"
 
         except Exception as e:
             st.error(f"读取账单失败：{e}")
