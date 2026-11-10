@@ -32,7 +32,8 @@ else:
         moving_average_data,
         pie_fig,
         line_fig,
-        bar_fig
+        bar_fig,
+        moving_average_fig
     ) = show_statistics(data)
 
     # 保存报告所需的统计结果
@@ -42,7 +43,8 @@ else:
         "moving_average_data": moving_average_data,
         "pie_fig": pie_fig,
         "line_fig": line_fig,
-        "bar_fig": bar_fig
+        "bar_fig": bar_fig,
+        "moving_average_fig":moving_average_fig
     }
 
 st.divider()

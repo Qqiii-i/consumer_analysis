@@ -34,11 +34,8 @@ def load_cpi_data():
 
     return cpi_data.sort_values("month").reset_index(drop=True)
 
-
 def calculate_expense_yoy(data):
-    """
-    计算个人消费支出同比增长率。
-    """
+    # 计算个人消费支出同比增长率。
     expense_data = data[
         data["transaction_type"] == "支出"
     ].copy()
@@ -191,6 +188,11 @@ def show_cpi_analysis(data):
             }.get(trace.name, trace.name)
         )
     )
+    
+    fig.update_traces(
+        line=dict(color="#2878D0"),
+        selector=dict(type="scatter")
+    )
 
     st.plotly_chart(fig, width="stretch")
 
@@ -206,6 +208,10 @@ def show_cpi_analysis(data):
             "month": "月份",
             "cpi_index": "价格指数（首月=100）"
         }
+    )
+
+    cpi_fig.update_traces(
+        line=dict(color="#2878D0")
     )
 
     st.plotly_chart(cpi_fig, width="stretch")
@@ -244,10 +250,32 @@ def show_cpi_analysis(data):
         title="个人消费支出与物价涨幅变化对比"
     )
 
+    growth_fig.update_traces(
+        selector=dict(name="个人消费支出环比增长率"),
+        line=dict(color="#2878D0")
+    )
+
+    growth_fig.update_traces(
+        selector=dict(name="CPI环比涨幅"),
+        line=dict(color="#ED7D31")
+    )
+
+    growth_fig.update_xaxes(
+        type="category",
+        title_text="月份"
+    )
+
     st.plotly_chart(growth_fig, width="stretch")
 
-def show_economics(data):
+    return {
+        "result": result,
+        "growth_data": growth_data,
+        "fig": fig,
+        "cpi_fig": cpi_fig,
+        "growth_fig": growth_fig
+    }
 
+def show_economics(data):
     # 经济学指标分析
     st.divider()
     st.subheader("经济学指标分析")

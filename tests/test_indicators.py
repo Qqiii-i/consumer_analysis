@@ -21,7 +21,6 @@ def test_basic_indicators():
     assert result["total_expense"] == 1500
     assert result["balance"] == 3500
 
-
 def test_category_statistics():
     data = pd.DataFrame({
         "transaction_type": ["支出", "支出", "支出", "收入"],
@@ -116,7 +115,6 @@ def test_saving_rate():
 
     assert result == 0.5
 
-
 def test_saving_rate_without_income():
     data = pd.DataFrame({
         "transaction_type": ["支出", "支出"],
@@ -126,7 +124,6 @@ def test_saving_rate_without_income():
     result = calculate_saving_rate(data)
 
     assert result == 0.0
-
 
 def test_saving_rate_when_expense_exceeds_income():
     data = pd.DataFrame({

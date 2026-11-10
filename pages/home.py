@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 # 首页标题
@@ -23,7 +22,6 @@ features = [
     ("🧩", "消费行为聚类", "分析不同消费行为特征"),
     ("📄", "分析报告导出", "生成 Excel 和 PDF 分析报告"),
 ]
-
 
 # 固定三列，所有卡片统一跟随最高卡片的高度
 st.markdown("""
@@ -115,7 +113,6 @@ a[data-testid="stPageLink-NavLink"]:hover {
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 # 生成所有卡片
 # 功能页面对应关系

@@ -7,15 +7,16 @@ from algorithms.trend_analysis import (
     calculate_expense_by_period,
     calculate_expense_frequency,
     calculate_expense_distribution,
+    calculate_monthly_category_ratio,
     generate_consumption_insights
 )
-
 
 def show_statistics(data):
     # 初始化 PDF 所需的图表变量
     pie_fig = None
     line_fig = None
     bar_fig = None
+    moving_average_fig = None
 
     # 消费类别统计
     st.divider()
@@ -77,43 +78,48 @@ def show_statistics(data):
     # 消费结构随时间变化
     st.divider()
     st.subheader("消费结构随时间变化")
-    
-    monthly_category = expense_data.copy()
 
-    monthly_category["month"] = (
-        pd.to_datetime(monthly_category["transaction_date"])
-        .dt.to_period("M")
-        .astype(str)
-    )
-
-    monthly_category = (
-        monthly_category.groupby(
-            ["month", "category"]
-        )["amount"]
-        .sum()
-        .reset_index()
-    )
+    monthly_category = calculate_monthly_category_ratio(data)
 
     if not monthly_category.empty:
-        amount_fig = px.line(
+        amount_fig = px.bar(
             monthly_category,
             x="month",
-            y="amount",
+            y="percentage",
             color="category",
-            markers=True,
-            title="各类别月度消费金额变化",
+            title="各类别月度消费占比变化",
             labels={
                 "month": "月份",
-                "amount": "消费金额（元）",
-                "category": "消费类别"
-            }
+                "percentage": "消费占比（%）",
+                "category": "消费类别",
+                "amount": "消费金额（元）"
+            },
+            hover_data={
+                "amount": ":.2f",
+                "percentage": ":.2f"
+            },
+            color_discrete_sequence=px.colors.qualitative.Set2,
+            category_orders={
+                "category": category_stats["category"].tolist()
+            }        
+        )
+
+        amount_fig.update_layout(
+            barmode="stack",
+            yaxis=dict(
+                title="消费占比（%）",
+                range=[0, 100],
+                ticksuffix="%"
+            ),
+            xaxis_title="月份",
+            legend_title="消费类别"
         )
 
         st.plotly_chart(amount_fig, width="stretch")
     else:
         st.info("暂无数据，无法分析消费结构变化。")
 
-     # 消费趋势统计
+    # 消费趋势统计
     st.divider()
     st.subheader("消费趋势统计")
 
@@ -177,8 +183,8 @@ def show_statistics(data):
     st.dataframe(
         frequency_data.rename(
             columns={
-                "period": "统计时间",
-                "transaction_count": "消费次数"
+                "period": "Period",
+                "transaction_count": "Transaction Count"
             }
         ),
         width="stretch"
@@ -234,6 +240,11 @@ def show_statistics(data):
                 text="transaction_count"
             )
 
+            distribution_fig.update_traces(
+                textangle=0,
+                textposition="outside"
+            )
+
             st.plotly_chart(distribution_fig, width="stretch")
         else:
             st.info("当前没有可用于金额分布统计的支出数据。")
@@ -247,7 +258,7 @@ def show_statistics(data):
     for insight in insights:
         st.write(f"- {insight}")
 
-    # 保留移动平均数据，供报告导出使用
+    # 移动平均分析
     monthly_trend = calculate_monthly_trend(data)
 
     if len(monthly_trend) >= 2:
@@ -255,6 +266,24 @@ def show_statistics(data):
             monthly_trend,
             window=2
         )
+
+        moving_average_fig = px.line(
+            moving_average_data,
+            x="month",
+            y="moving_average",
+            markers=True,
+            title="月度消费移动平均分析",
+            labels={
+                "month": "月份",
+                "moving_average": "移动平均消费金额（元）"
+            }
+        )
+
+        moving_average_fig.update_traces(
+            line=dict(color="#2878D0", width=3),
+            marker=dict(color="#2878D0", size=8)
+        )
+
     else:
         moving_average_data = pd.DataFrame(
             columns=["month", "total_expense", "moving_average"]
@@ -266,5 +295,6 @@ def show_statistics(data):
         moving_average_data,
         pie_fig,
         line_fig,
-        bar_fig
+        bar_fig,
+        moving_average_fig
     )

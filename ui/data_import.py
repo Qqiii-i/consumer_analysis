@@ -8,9 +8,7 @@ from processors.cleaner import (
     remove_invalid_transactions
 )
 
-
 def show_data_import():
-
     # 账单数据导入
     st.divider()
     st.subheader("账单数据导入")
@@ -112,7 +110,7 @@ def show_data_import():
         st.caption("以下仅显示存在问题的数据质量检查项。")
 
         empty_problem_data = pd.DataFrame(
-            columns=["问题类型", "涉及字段", "问题数量"]
+            columns=["Problem Type", "Affected Field", "Number of Issues"]
         )
 
         st.dataframe(
@@ -171,39 +169,39 @@ def show_data_import():
     for field, count in missing_values.items():
         if count > 0:
             problem_records.append({
-                "问题类型": "缺失值",
-                "涉及字段": field,
-                "问题数量": count
+                "Problem Type": "缺失值",
+                "Affected Field": field,
+                "Numbers of Issues": count
             })
 
     # 检查重复交易编号
     if quality_report["duplicate_ids"] > 0:
         problem_records.append({
-            "问题类型": "重复交易编号",
-            "涉及字段": "transaction_id",
-            "问题数量": quality_report["duplicate_ids"]
+            "Problem Type": "重复交易编号",
+            "Affected Field": "transaction_id",
+            "Numbers of Issues": quality_report["duplicate_ids"]
         })
 
     # 检查无效日期
     if quality_report["invalid_dates"] > 0:
         problem_records.append({
-            "问题类型": "无效日期",
-            "涉及字段": "transaction_date",
-            "问题数量": quality_report["invalid_dates"]
+            "Problem Type": "无效日期",
+            "Affected Field": "transaction_date",
+            "Numbers of Issues": quality_report["invalid_dates"]
         })
 
     # 检查无效金额
     if quality_report["invalid_amounts"] > 0:
         problem_records.append({
-            "问题类型": "无效金额",
-            "涉及字段": "amount",
-            "问题数量": quality_report["invalid_amounts"]
+            "Problem Type": "无效金额",
+            "Affected Field": "amount",
+            "Numbers of Issues": quality_report["invalid_amounts"]
         })
 
     # 即使没有问题，也保留空表格
     problem_data = pd.DataFrame(
         problem_records,
-        columns=["问题类型", "涉及字段", "问题数量"]
+        columns=["Problem Type", "Affected Field", "Numbers of Issues"]
     )
 
     st.dataframe(

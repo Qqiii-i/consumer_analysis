@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-
 from algorithms.trend_analysis import (
     calculate_monthly_trend,
     calculate_moving_average,
@@ -42,7 +41,6 @@ def test_calculate_moving_average():
     assert result.loc[1, "moving_average"] == 150
     assert result.loc[2, "moving_average"] == 250
 
-
 def test_moving_average_invalid_window():
     data = pd.DataFrame({
         "total_expense": [100, 200]
@@ -80,7 +78,6 @@ def test_calculate_expense_by_period():
     assert monthly.loc[0, "period"] == "2026-01"
     assert monthly.loc[0, "total_expense"] == 600
 
-    # 年统计
     # 年统计
     yearly = calculate_expense_by_period(data, "Y")
     assert len(yearly) == 2

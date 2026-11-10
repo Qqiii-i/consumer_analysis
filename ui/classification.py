@@ -58,7 +58,6 @@ def reset_descriptions():
         st.session_state.get("classification_editor_version", 0) + 1
     )
 
-
 def show_classification(data):
 
     st.divider()
@@ -70,7 +69,6 @@ def show_classification(data):
     ]
 
     if not data.empty:
-
         # 初始化人工描述修改记录
         if "description_edits" not in st.session_state:
             st.session_state["description_edits"] = {}
@@ -158,7 +156,6 @@ def show_classification(data):
 
         transfer_category_changed = False
 
-
         # 微信账单中未分类转账记录的单独展示
         if st.session_state.get("transaction_data_source") == "微信支付账单":
 
@@ -192,10 +189,10 @@ def show_classification(data):
                     ],
                     column_config={
                         "transaction_id": st.column_config.TextColumn("Transaction ID"),
-                        "description": st.column_config.TextColumn("交易描述"),
-                        "predicted_category": st.column_config.TextColumn("自动分类"),
+                        "description": st.column_config.TextColumn("Description"),
+                        "predicted_category": st.column_config.TextColumn("Original Category"),
                         "final_category": st.column_config.SelectboxColumn(
-                            "最终类别",
+                            "Final Category",
                             options=categories,
                             required=True
                         )

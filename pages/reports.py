@@ -1,8 +1,11 @@
 import streamlit as st
-
+import pandas as pd
+from algorithms.trend_analysis import(
+    generate_consumption_insights,
+    predict_next_month_expense
+)
 from reports.pdf_report import create_pdf_report
 from reports.excel_report import create_excel_report
-
 
 st.title("📑 消费分析报告")
 
@@ -70,6 +73,20 @@ else:
     # 获取统计分析结果
     statistics_results = st.session_state["statistics_results"]
 
+    # 计算下个月消费预测
+    if len(monthly_trend := st.session_state["statistics_results"]["monthly_trend"]) >= 3:
+        forecast_amount = predict_next_month_expense(monthly_trend)
+
+        forecast_month = (
+            pd.Period(monthly_trend["month"].iloc[-1], freq="M") + 1
+        ).strftime("%Y-%m")
+    else:
+        forecast_amount = None
+        forecast_month = None
+
+    # 获取 CPI 分析结果（可选）
+    cpi_results = st.session_state.get("cpi_results")
+
     category_stats = statistics_results["category_stats"]
     monthly_trend = statistics_results["monthly_trend"]
     moving_average_data = statistics_results["moving_average_data"]
@@ -81,22 +98,22 @@ else:
     # 获取异常检测和聚类结果
     abnormal_data = st.session_state["abnormal_data"]
     cluster_summary = st.session_state["cluster_summary"]
+    category_summary = st.session_state.get("category_summary")
+    silhouette = st.session_state.get("silhouette")
 
     st.divider()
 
-    st.subheader("报告内容")
-
-    st.write("本报告包含以下分析内容：")
+    st.subheader("报告内容：")
 
     st.markdown("""
     - 清洗后的消费账单
     - 收入、支出与收支结余
     - 储蓄率、恩格尔系数、APC 和 MPC
+    - CPI与个人消费分析
     - 消费类别统计与月度消费趋势
-    - 异常消费记录
-    - 自动消费分类结果
-    - K-Means 消费行为聚类
-    - 移动平均分析
+    - 消费偏好与行为特征分析
+    - 移动平均分析与消费预测
+    - K-Means 消费行为聚类分析
     """)
 
     st.divider()
@@ -144,13 +161,22 @@ else:
                 mpc,
                 category_stats,
                 monthly_trend,
-                abnormal_data,
-                classified_data,
                 cluster_summary,
                 moving_average_data,
                 pie_fig,
                 line_fig,
-                bar_fig
+                bar_fig,
+                cpi_results=cpi_results,
+                consumption_insights=generate_consumption_insights(
+                    st.session_state["transaction_data"]
+                ),
+                forecast_month=forecast_month,
+                forecast_amount=forecast_amount,
+                category_summary=category_summary,
+                silhouette=silhouette,
+                moving_average_fig=st.session_state[
+                    "statistics_results"
+                ].get("moving_average_fig")
             )
 
         st.success("PDF 报告生成成功！")

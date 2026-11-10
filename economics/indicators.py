@@ -1,10 +1,7 @@
 import pandas as pd
 
 def calculate_basic_indicators(data):
-    """
-    计算总收入、总支出和收支结余。
-    """
-
+    # 计算总收入、总支出和收支结余。
     income = data.loc[
         data["transaction_type"] == "收入", "amount"
     ].sum()
@@ -21,12 +18,8 @@ def calculate_basic_indicators(data):
         "balance": balance
     }
 
-
 def calculate_category_statistics(data):
-    """
-    统计各消费类别的支出金额和占比。
-    """
-
+    # 统计各消费类别的支出金额和占比。
     expense_data = data[
         data["transaction_type"] == "支出"
     ]
@@ -49,12 +42,8 @@ def calculate_category_statistics(data):
         by="amount", ascending=False
     ).reset_index(drop=True)
 
-
 def calculate_monthly_expenses(data):
-    """
-    按月份统计消费支出。
-    """
-
+    # 按月份统计消费支出。
     expense_data = data[
         data["transaction_type"] == "支出"
     ].copy()
@@ -82,12 +71,8 @@ def calculate_monthly_expenses(data):
 
     return result.sort_values("month").reset_index(drop=True)
 
-
 def calculate_engel_coefficient(data):
-    """
-    计算恩格尔系数（餐饮支出 / 总消费支出）。
-    """
-
+    # 计算恩格尔系数（餐饮支出 / 总消费支出）
     expense_data = data[
         data["transaction_type"] == "支出"
     ]
@@ -104,10 +89,7 @@ def calculate_engel_coefficient(data):
     return food_expense / total_expense * 100
 
 def calculate_average_propensity_to_consume(data):
-    """
-    计算平均消费倾向（APC）。
-    """
-
+    # 计算平均消费倾向(APC)
     income = data.loc[
         data["transaction_type"] == "收入", "amount"
     ].sum()
@@ -122,10 +104,7 @@ def calculate_average_propensity_to_consume(data):
     return expense / income
 
 def calculate_saving_rate(data):
-    """
-    计算储蓄率（收支结余 / 总收入）。
-    """
-
+    # 计算储蓄率（收支结余 / 总收入）
     income = data.loc[
         data["transaction_type"] == "收入", "amount"
     ].sum()
@@ -140,10 +119,7 @@ def calculate_saving_rate(data):
     return (income - expense) / income
 
 def calculate_marginal_propensity_to_consume(data):
-    """
-    根据相邻月份的收入和消费支出变化计算边际消费倾向。
-    """
-
+    # 根据相邻月份的收入和消费支出变化计算边际消费倾向。
     monthly_data = data.copy()
 
     monthly_data["transaction_date"] = pd.to_datetime(

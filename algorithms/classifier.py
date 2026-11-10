@@ -57,9 +57,7 @@ CATEGORY_KEYWORDS = {
 }
 
 def train_nb_classifier(data):
-    """
-    使用 TF-IDF 和朴素贝叶斯训练消费分类模型。
-    """
+    # 使用 TF-IDF 和朴素贝叶斯训练消费分类模型。
     train_data = data[
         (data["transaction_type"] == "支出")
         & data["description"].notna()
@@ -101,10 +99,7 @@ def train_nb_classifier(data):
     return model, vectorizer, accuracy
 
 def classify_transaction(description):
-    """
-    根据交易描述中的关键词自动判断消费类别。
-    """
-
+    # 根据交易描述中的关键词自动判断消费类别。
     # 检查输入是否合法
     if not isinstance(description, str) or not description.strip():
         return "未分类"
@@ -120,9 +115,7 @@ def classify_transaction(description):
     return "未分类"
 
 def classify_transactions(data):
-    """
-    使用 TF-IDF 和朴素贝叶斯进行批量消费分类。
-    """
+    # 使用 TF-IDF 和朴素贝叶斯进行批量消费分类。
     result = data.copy()
 
     # 先使用关键词方法进行基础分类
@@ -153,9 +146,7 @@ def classify_transactions(data):
     return result
 
 def evaluate_classification(data):
-    """
-    评价自动消费分类效果。
-    """
+    # 评价自动消费分类效果。
     y_true = data["category"]
     y_pred = data["predicted_category"]
 
@@ -176,8 +167,8 @@ def evaluate_classification(data):
         zero_division=0
     )
 
-    print("自动分类算法评价结果")
-    print(f"准确率：{accuracy:.3f}")
-    print(f"精确率：{precision:.3f}")
-    print(f"召回率：{recall:.3f}")
-    print(f"F1值：{f1:.3f}")
+    print("Automatic Classification Evaluation Results")
+    print(f"Accuracy: {accuracy:.3f}")
+    print(f"Precision: {precision:.3f}")
+    print(f"Recall: {recall:.3f}")
+    print(f"F1 Score: {f1:.3f}")

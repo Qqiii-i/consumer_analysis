@@ -29,9 +29,7 @@ def clean_transactions(data):
 
 
 def check_data_quality(data):
-    """
-    检查消费记录的数据质量。
-    """
+    # 检查消费记录的数据质量。
     report = {
         # 每个字段的缺失值数量
         "missing_values": data.isnull().sum(),
@@ -50,9 +48,7 @@ def check_data_quality(data):
 
 
 def remove_invalid_transactions(data):
-    """
-    自动处理无效和重复交易记录。
-    """
+    # 自动处理无效和重复交易记录。
     cleaned_data = data.copy()
 
     # 将空字符串也视为缺失值

@@ -1,13 +1,10 @@
-
 from pathlib import Path
-
 from data_loader import load_transactions
 from processors.cleaner import (
     clean_transactions,
     remove_invalid_transactions
 )
 from economics.indicators import calculate_basic_indicators
-
 
 def main():
     # 获取项目中的模拟账单路径
@@ -41,7 +38,6 @@ def main():
     print(f"总收入：{indicators['total_income']:.2f} 元")
     print(f"总支出：{indicators['total_expense']:.2f} 元")
     print(f"收支结余：{indicators['balance']:.2f} 元")
-
 
 if __name__ == "__main__":
     main()

@@ -2,10 +2,7 @@ import pandas as pd
 import re
 
 def import_wechat_bill(uploaded_file):
-    """
-    读取微信支付 Excel 账单，并转换为项目统一格式。
-    """
-
+    # 读取微信支付 Excel 账单，并转换为项目统一格式。
     # 不把交易单号等字段识别为数字
     raw_data = pd.read_excel(
         uploaded_file,

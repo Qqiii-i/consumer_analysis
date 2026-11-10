@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-
+import plotly.express as px
 from algorithms.clustering import (
     cluster_transactions,
     summarize_clusters
 )
-
 
 def show_clustering(data):
 
@@ -25,6 +24,17 @@ def show_clustering(data):
             "total_amount"
         ]
     )
+
+    category_summary = pd.DataFrame(
+        columns=[
+            "cluster",
+            "category",
+            "amount",
+            "category_ratio"
+        ]
+    )
+
+    silhouette = None
 
     if expense_count >= 3:
 
@@ -46,19 +56,41 @@ def show_clustering(data):
 
         st.write("各聚类组交易笔数对比")
 
-        st.bar_chart(
+        cluster_fig = px.bar(
             cluster_summary,
             x="cluster",
-            y="transaction_count"
+            y="transaction_count",
+            title="各聚类组交易笔数对比",
+            text="transaction_count",
+            labels={
+                "cluster": "聚类组",
+                "transaction_count": "交易笔数"
+            }
         )
+
+        cluster_fig.update_xaxes(tickangle=0)
+
+        st.plotly_chart(cluster_fig, width="stretch")
 
         st.write("各聚类组平均消费金额对比")
 
-        st.bar_chart(
+        cluster_fig = px.bar(
             cluster_summary,
             x="cluster",
-            y="average_amount"
+            y="average_amount",
+            title="各聚类组平均消费金额对比",
+            text="average_amount",
+            labels={
+                "cluster": "聚类组",
+                "average_amount": "平均消费金额（元）"
+            }
         )
+        
+        cluster_fig.update_xaxes(tickangle=0)
+
+        cluster_fig.update_traces(texttemplate="%{text:.2f}")
+
+        st.plotly_chart(cluster_fig, width="stretch")
 
         st.write("各聚类组消费类别统计")
         st.dataframe(category_summary, width="stretch")
@@ -110,4 +142,4 @@ def show_clustering(data):
     else:
         st.info("消费记录不足3条，暂时无法进行K-Means聚类分析。")
 
-    return cluster_summary
+    return cluster_summary, category_summary, silhouette

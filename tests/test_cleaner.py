@@ -1,12 +1,9 @@
-
 import pandas as pd
-
 from processors.cleaner import (
     clean_transactions,
     check_data_quality,
     remove_invalid_transactions
 )
-
 
 def sample_data():
     return pd.DataFrame({
@@ -21,7 +18,6 @@ def sample_data():
         "payment_method": ["微信", None, "支付宝", "银行卡"]
     })
 
-
 def test_clean_transactions():
     data = sample_data()
     result = clean_transactions(data)
@@ -33,7 +29,6 @@ def test_clean_transactions():
     assert pd.isna(result.loc[3, "transaction_date"])
     assert pd.isna(result.loc[3, "amount"])
 
-
 def test_check_data_quality():
     data = clean_transactions(sample_data())
     report = check_data_quality(data)
@@ -41,7 +36,6 @@ def test_check_data_quality():
     assert report["duplicate_ids"] == 1
     assert report["invalid_dates"] == 1
     assert report["invalid_amounts"] == 1
-
 
 def test_remove_invalid_transactions():
     data = clean_transactions(sample_data())
@@ -53,7 +47,6 @@ def test_remove_invalid_transactions():
     assert result["category"].notna().all()
     assert result["payment_method"].notna().all()
 
-
 def test_remove_invalid_transactions_fills_missing_values():
     data = clean_transactions(sample_data())
     result = remove_invalid_transactions(data)
@@ -63,7 +56,6 @@ def test_remove_invalid_transactions_fills_missing_values():
     assert row["description"] == "未填写"
     assert row["category"] == "未填写"
     assert row["payment_method"] == "未填写"
-
 
 def test_clean_transactions_does_not_modify_original_data():
     data = sample_data()

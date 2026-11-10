@@ -1,11 +1,8 @@
 import streamlit as st
 import pandas as pd
-
 from algorithms.anomaly_detection import compare_anomaly_detection
 
-
 def show_anomaly_detection(data):
-
     # 异常消费检测
     st.divider()
     st.subheader("异常消费检测")

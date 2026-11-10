@@ -1,6 +1,4 @@
-
 import pandas as pd
-
 from algorithms.anomaly_detection import (
     detect_outliers_iqr,
     detect_outliers_zscore,

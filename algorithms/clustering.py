@@ -1,4 +1,3 @@
-
 import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -46,9 +45,7 @@ def cluster_transactions(data, n_clusters=3):
 
 
 def summarize_clusters(data):
-    """
-    统计各聚类组的消费金额和类别特征。
-    """
+    # 统计各聚类组的消费金额和类别特征。
     summary = (
         data.groupby("cluster")
         .agg(

@@ -1,10 +1,7 @@
-
 import pandas as pd
 
 def detect_outliers_iqr(data, column="amount"):
-    """
-    使用 IQR 四分位距法检测异常消费记录。
-    """
+    # 使用 IQR 四分位距法检测异常消费记录。
     values = pd.to_numeric(data[column], errors="coerce")
 
     if values.notna().sum() < 4:
@@ -18,18 +15,13 @@ def detect_outliers_iqr(data, column="amount"):
     lower_bound = q1 - 1.5 * iqr
     upper_bound = q3 + 1.5 * iqr
 
-    mask = (
-        (values < lower_bound)
-        | (values > upper_bound)
-    )
+    mask = ((values < lower_bound) | (values > upper_bound))
 
     return data.loc[mask].copy()
 
 
 def detect_outliers_zscore(data, column="amount", threshold=3):
-    """
-    使用 Z-score 标准分数法检测异常消费记录。
-    """
+    # 使用 Z-score 标准分数法检测异常消费记录。
     values = pd.to_numeric(data[column], errors="coerce")
 
     valid_values = values.dropna()
@@ -48,9 +40,7 @@ def detect_outliers_zscore(data, column="amount", threshold=3):
     return data.loc[z_scores.abs() > threshold].copy()
 
 def compare_anomaly_detection(data, column="amount"):
-    """
-    整合 IQR 和 Z-score 的异常检测结果。
-    """
+    # 整合 IQR 和 Z-score 的异常检测结果。
     result = data.copy()
 
     iqr_outliers = detect_outliers_iqr(data, column)
@@ -60,14 +50,14 @@ def compare_anomaly_detection(data, column="amount"):
     result["zscore_outlier"] = result.index.isin(zscore_outliers.index)
 
     result["anomaly_methods"] = result.apply(
-        lambda row: "、".join(
+        lambda row: ", ".join(
             method
             for method, detected in [
                 ("IQR", row["iqr_outlier"]),
                 ("Z-score", row["zscore_outlier"])
             ]
             if detected
-        ) or "正常",
+        ) or "Normal",
         axis=1
     )
 

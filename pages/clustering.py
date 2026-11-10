@@ -25,9 +25,11 @@ else:
         )
 
     # 执行消费行为聚类
-    cluster_summary = show_clustering(data)
+    cluster_summary, category_summary, silhouette = show_clustering(data)
 
     st.session_state["cluster_summary"] = cluster_summary.copy()
+    st.session_state["category_summary"] = category_summary.copy()
+    st.session_state["silhouette"] = silhouette
 
 st.divider()
 

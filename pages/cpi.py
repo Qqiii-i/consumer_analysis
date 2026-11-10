@@ -10,7 +10,10 @@ if "transaction_data" not in st.session_state:
 else:
     data = st.session_state["transaction_data"].copy()
 
-    show_cpi_analysis(data)
+    cpi_results = show_cpi_analysis(data)
+
+    if cpi_results is not None:
+        st.session_state["cpi_results"] = cpi_results
 
 st.divider()
 

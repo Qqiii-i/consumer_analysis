@@ -1,17 +1,18 @@
-
 import pandas as pd
 
-
 def calculate_monthly_trend(data):
-    """
-    统计每个月的消费支出。
-    """
+    # 统计每个月的消费支出。
     expense_data = data[
         data["transaction_type"] == "支出"
     ].copy()
 
     expense_data["transaction_date"] = pd.to_datetime(
         expense_data["transaction_date"],
+        errors="coerce"
+    )
+
+    expense_data["amount"] = pd.to_numeric(
+        expense_data["amount"],
         errors="coerce"
     )
 
@@ -35,10 +36,62 @@ def calculate_monthly_trend(data):
 
     return result.sort_values("month").reset_index(drop=True)
 
+def calculate_monthly_category_ratio(data):
+    # 计算每个月各消费类别的金额及其占当月总消费的比例。
+    expense_data = data[
+        data["transaction_type"] == "支出"
+    ].copy()
+
+    expense_data["transaction_date"] = pd.to_datetime(
+        expense_data["transaction_date"],
+        errors="coerce"
+    )
+
+    expense_data["amount"] = pd.to_numeric(
+        expense_data["amount"],
+        errors="coerce"
+    )
+
+    expense_data = expense_data.dropna(
+        subset=["transaction_date", "amount", "category"]
+    )
+
+    expense_data = expense_data[
+        expense_data["amount"] > 0
+    ]
+
+    expense_data["month"] = (
+        expense_data["transaction_date"]
+        .dt.to_period("M")
+        .astype(str)
+    )
+
+    # 统计每个月各类别的消费金额
+    monthly_category = (
+        expense_data.groupby(
+            ["month", "category"]
+        )["amount"]
+        .sum()
+        .reset_index()
+    )
+
+    # 计算每个月的消费总额
+    monthly_total = (
+        monthly_category.groupby("month")["amount"]
+        .transform("sum")
+    )
+
+    # 计算各类别占当月消费的比例
+    monthly_category["percentage"] = (
+        monthly_category["amount"]
+        / monthly_total
+        * 100
+    )
+
+    return monthly_category
+
 def calculate_moving_average(data, window=2):
-    """
-    计算月度消费支出的移动平均值。
-    """
+    # 计算月度消费支出的移动平均值。
     if window <= 0:
         raise ValueError("移动平均窗口必须大于0")
 
@@ -53,9 +106,7 @@ def calculate_moving_average(data, window=2):
     return result
 
 def predict_next_month_expense(data):
-    """
-    使用最近3个月的消费金额预测下个月支出。
-    """
+    # 使用最近3个月的消费金额预测下个月支出。
     if len(data) < 3:
         raise ValueError("至少需要3个月的消费数据才能进行预测")
 
@@ -138,9 +189,7 @@ def calculate_expense_frequency(data, period="M"):
     return result.sort_values("period").reset_index(drop=True)
 
 def calculate_expense_distribution(data, period="M"):
-    """
-    按日、周、月、年统计不同金额区间的消费笔数
-    """
+    # 按日、周、月、年统计不同金额区间的消费笔数
     expense_data = data[
         data["transaction_type"] == "支出"
     ].copy()
@@ -154,7 +203,7 @@ def calculate_expense_distribution(data, period="M"):
     )
 
     bins = [0, 50, 100, 500, float("inf")]
-    labels = ["0-50元", "50-100元", "100-500元", "500元以上"]
+    labels = ["CNY 0-50", "CNY 50-100", "CNY 100-500", "Above CNY 500"]
 
     expense_data["amount_range"] = pd.cut(
         expense_data["amount"],
@@ -175,10 +224,7 @@ def calculate_expense_distribution(data, period="M"):
     return result
 
 def generate_consumption_insights(data):
-    """
-    根据消费记录生成消费偏好与行为特征分析。
-    """
-
+    # 根据消费记录生成消费偏好与行为特征分析。
     expense_data = data[
         data["transaction_type"] == "支出"
     ].copy()
@@ -259,13 +305,13 @@ def generate_consumption_insights(data):
 
     # 消费日期分布
     weekday_names = {
-        0: "周一",
-        1: "周二",
-        2: "周三",
-        3: "周四",
-        4: "周五",
-        5: "周六",
-        6: "周日"
+        0: "Monday",
+        1: "Tuesday",
+        2: "Wednesday",
+        3: "Thursday",
+        4: "Friday",
+        5: "Saturday",
+        6: "Sunday"
     }
 
     weekday_count = (

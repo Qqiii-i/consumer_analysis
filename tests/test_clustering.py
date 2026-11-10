@@ -1,6 +1,5 @@
-
+import pytest
 import pandas as pd
-
 from algorithms.clustering import (
     cluster_transactions,
     summarize_clusters
@@ -24,9 +23,6 @@ def test_cluster_transactions():
     assert len(result) == 6
     assert "cluster" in result.columns
     assert result["cluster"].nunique() == 3
-
-import pytest
-
 
 def test_cluster_with_insufficient_data():
     data = pd.DataFrame({
