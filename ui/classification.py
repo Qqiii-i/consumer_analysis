@@ -139,7 +139,7 @@ def show_classification(data):
                 "transaction_id": st.column_config.TextColumn("Transaction ID"),
                 "description": st.column_config.TextColumn("Description"),
                 "category": st.column_config.TextColumn("Original Category"),
-                "predicted_category": st.column_config.TextColumn("Predicted Category"),
+                "predicted_category": None,
                 "final_category": st.column_config.SelectboxColumn(
                     "Final Category",
                     options=categories,
@@ -155,6 +155,92 @@ def show_classification(data):
             width="stretch",
             key=f"classification_editor_{st.session_state.get('classification_editor_version', 0)}"
         )
+
+        transfer_category_changed = False
+
+
+        # 微信账单中未分类转账记录的单独展示
+        if st.session_state.get("transaction_data_source") == "微信支付账单":
+
+
+            transfer_mask = (
+                edited_data["final_category"].astype(str).eq("未分类")
+                & edited_data["description"].astype(str).str.contains(
+                    "转账|二维码收款",
+                    na=False
+                )
+            )
+
+            transfer_data = edited_data.loc[transfer_mask].copy()
+
+            st.divider()
+            st.subheader("💸 待处理转账记录")
+
+            if not transfer_data.empty:
+                st.caption(
+                    "以下记录同时保留在上方原始分类列表中。"
+                )
+
+                transfer_edited_data = st.data_editor(
+                    transfer_data[
+                        [
+                            "transaction_id",
+                            "description",
+                            "predicted_category",
+                            "final_category"
+                        ]
+                    ],
+                    column_config={
+                        "transaction_id": st.column_config.TextColumn("Transaction ID"),
+                        "description": st.column_config.TextColumn("交易描述"),
+                        "predicted_category": st.column_config.TextColumn("自动分类"),
+                        "final_category": st.column_config.SelectboxColumn(
+                            "最终类别",
+                            options=categories,
+                            required=True
+                        )
+                    },
+                    disabled=[
+                        "transaction_id",
+                        "description",
+                        "predicted_category"
+                    ],
+                    hide_index=True,
+                    width="stretch",
+                    key=f"transfer_editor_{st.session_state.get('classification_editor_version', 0)}"
+                )
+
+                st.write(f"共发现 {len(transfer_data)} 条待处理转账记录。")
+
+                # 检查转账区域是否修改了类别
+                original_categories = transfer_data.set_index(
+                    "transaction_id"
+                )["final_category"]
+
+                new_categories = transfer_edited_data.set_index(
+                    "transaction_id"
+                )["final_category"]
+
+                changed_ids = new_categories[
+                    new_categories != original_categories
+                ].index
+
+                if len(changed_ids) > 0:
+
+                    new_category_map = new_categories.to_dict()
+
+                    edited_data.loc[
+                        edited_data["transaction_id"].isin(changed_ids),
+                        "final_category"
+                    ] = edited_data.loc[
+                        edited_data["transaction_id"].isin(changed_ids),
+                        "transaction_id"
+                    ].map(new_category_map)
+
+                    transfer_category_changed = True
+
+            else:
+                st.success("没有符合条件的待处理转账记录。")
 
         # 恢复按钮
         col1, col2 = st.columns(2)
@@ -230,6 +316,13 @@ def show_classification(data):
             st.session_state["classification_edits"][
                 row["transaction_id"]
             ] = row["final_category"]
+
+        # 转账区域修改后，刷新两个编辑区域
+        if transfer_category_changed:
+            st.session_state["classification_editor_version"] = (
+                st.session_state.get("classification_editor_version", 0) + 1
+            )
+            st.rerun()
 
         classified_data["description"] = edited_data["description"].values
 

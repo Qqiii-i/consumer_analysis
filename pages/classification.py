@@ -19,4 +19,23 @@ else:
 
 st.divider()
 
-st.page_link("pages/home.py", label="返回首页", icon="🏠")
+st.page_link(
+    "pages/data_import.py",
+    label="返回数据导入与清洗",
+    icon="⬅️",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/home.py",
+    label="返回首页",
+    icon="🏠",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/economics.py",
+    label="前往经济学分析指标",
+    icon="➡️",
+    width="stretch"
+)

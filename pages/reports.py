@@ -165,4 +165,16 @@ else:
 
 st.divider()
 
-st.page_link("pages/home.py", label="返回首页", icon="🏠")
+st.page_link(
+    "pages/clustering.py",
+    label="返回消费行为聚类",
+    icon="⬅️",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/home.py", 
+    label="返回首页", 
+    icon="🏠",
+    width="stretch"
+)

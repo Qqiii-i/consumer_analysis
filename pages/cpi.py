@@ -14,4 +14,23 @@ else:
 
 st.divider()
 
-st.page_link("pages/home.py", label="返回首页", icon="🏠")
+st.page_link(
+    "pages/economics.py",
+    label="返回经济学分析指标",
+    icon="⬅️",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/home.py",
+    label="返回首页",
+    icon="🏠",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/statistics.py",
+    label="前往消费统计与趋势分析",
+    icon="➡️",
+    width="stretch"
+)

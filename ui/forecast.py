@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
 from algorithms.trend_analysis import (
     calculate_monthly_trend,
     calculate_moving_average,
@@ -23,12 +24,25 @@ def show_forecast(data):
             width="stretch"
         )
 
-        st.line_chart(
+        moving_average_fig = px.line(
             moving_average_data,
             x="month",
             y=["total_expense", "moving_average"],
-            x_label="月份",
-            y_label="消费金额（元）"
+            markers=True,
+            title="消费移动平均分析",
+            labels={
+                "month": "月份",
+                "value": "消费金额（元）",
+                "variable": "指标"
+            }
+        )
+
+        # 设置月份标签水平显示
+        moving_average_fig.update_xaxes(tickangle=0)
+
+        st.plotly_chart(
+            moving_average_fig,
+            width="stretch"
         )
 
         if len(monthly_trend) >= 3:

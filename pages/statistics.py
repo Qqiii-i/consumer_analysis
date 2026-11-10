@@ -47,4 +47,23 @@ else:
 
 st.divider()
 
-st.page_link("pages/home.py", label="返回首页", icon="🏠")
+st.page_link(
+    "pages/cpi.py",
+    label="返回CPI与个人消费分析",
+    icon="⬅️",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/home.py",
+    label="返回首页",
+    icon="🏠",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/forecast.py",
+    label="前往消费预测",
+    icon="➡️",
+    width="stretch"
+)

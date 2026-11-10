@@ -31,4 +31,23 @@ else:
 
 st.divider()
 
-st.page_link("pages/home.py", label="返回首页", icon="🏠")
+st.page_link(
+    "pages/anomaly.py",
+    label="返回异常消费检测",
+    icon="⬅️",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/home.py",
+    label="返回首页",
+    icon="🏠",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/reports.py",
+    label="前往分析报告导出",
+    icon="➡️",
+    width="stretch"
+)

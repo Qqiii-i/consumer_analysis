@@ -105,20 +105,31 @@ def show_data_import():
             st.stop()
 
     else:
-        data_path = Path("data/sample/transactions.csv")
+        st.info("请先上传消费账单，上传后即可进行数据清洗和质量检查。")
 
-        if data_path.exists():
-            data = pd.read_csv(
-                data_path,
-                encoding="utf-8-sig"
-            )
-            data_source = "系统模拟账单"
-        else:
-            st.error("未找到账单文件，请上传 CSV 文件")
-            st.stop()
+        # 初始状态显示空的数据质量检查表格
+        st.subheader("数据质量检查")
+        st.caption("以下仅显示存在问题的数据质量检查项。")
+
+        empty_problem_data = pd.DataFrame(
+            columns=["问题类型", "涉及字段", "问题数量"]
+        )
+
+        st.dataframe(
+            empty_problem_data,
+            hide_index=True,
+            width="stretch"
+        )
+
+        st.stop()
 
     # 数据清洗
     original_count = len(data)
+
+    st.caption(
+        "数据清洗主要包括日期格式转换、金额数值化，"
+        "以及移除日期或金额无效的交易记录。"
+    )
 
     # 清洗前检查异常日期和金额
     invalid_dates = pd.to_datetime(
@@ -150,23 +161,55 @@ def show_data_import():
     quality_report = check_data_quality(data)
 
     st.subheader("数据质量检查")
-    st.write("各字段缺失值统计")
+    st.caption("以下仅显示存在问题的数据质量检查项。")
 
-    missing_data = quality_report["missing_values"].reset_index()
-    missing_data.columns = ["字段名称", "缺失数量"]
+    problem_records = []
 
-    st.dataframe(missing_data, width="stretch")
+    # 检查各字段缺失值
+    missing_values = quality_report["missing_values"]
 
-    st.write(
-        f"重复交易编号：{quality_report['duplicate_ids']} 条"
+    for field, count in missing_values.items():
+        if count > 0:
+            problem_records.append({
+                "问题类型": "缺失值",
+                "涉及字段": field,
+                "问题数量": count
+            })
+
+    # 检查重复交易编号
+    if quality_report["duplicate_ids"] > 0:
+        problem_records.append({
+            "问题类型": "重复交易编号",
+            "涉及字段": "transaction_id",
+            "问题数量": quality_report["duplicate_ids"]
+        })
+
+    # 检查无效日期
+    if quality_report["invalid_dates"] > 0:
+        problem_records.append({
+            "问题类型": "无效日期",
+            "涉及字段": "transaction_date",
+            "问题数量": quality_report["invalid_dates"]
+        })
+
+    # 检查无效金额
+    if quality_report["invalid_amounts"] > 0:
+        problem_records.append({
+            "问题类型": "无效金额",
+            "涉及字段": "amount",
+            "问题数量": quality_report["invalid_amounts"]
+        })
+
+    # 即使没有问题，也保留空表格
+    problem_data = pd.DataFrame(
+        problem_records,
+        columns=["问题类型", "涉及字段", "问题数量"]
     )
 
-    st.write(
-        f"无效日期：{quality_report['invalid_dates']} 条"
-    )
-
-    st.write(
-        f"无效金额：{quality_report['invalid_amounts']} 条"
+    st.dataframe(
+        problem_data,
+        hide_index=True,
+        width="stretch"
     )
 
     st.write(f"当前数据来源：{data_source}")
@@ -174,5 +217,6 @@ def show_data_import():
     st.dataframe(data, width="stretch")
 
     st.session_state["transaction_data"] = data.copy()
+    st.session_state["transaction_data_source"] = data_source
 
     return data

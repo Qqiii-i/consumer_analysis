@@ -31,4 +31,23 @@ else:
 
 st.divider()
 
-st.page_link("pages/home.py", label="返回首页", icon="🏠")
+st.page_link(
+    "pages/forecast.py",
+    label="返回消费预测",
+    icon="⬅️",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/home.py",
+    label="返回首页",
+    icon="🏠",
+    width="stretch"
+)
+
+st.page_link(
+    "pages/clustering.py",
+    label="前往消费行为聚类",
+    icon="➡️",
+    width="stretch"
+)
