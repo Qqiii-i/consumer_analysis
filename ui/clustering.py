@@ -7,7 +7,6 @@ from algorithms.clustering import (
 )
 
 def show_clustering(data):
-
     # K-Means消费行为聚类
     st.divider()
     st.subheader("消费行为聚类分析")
