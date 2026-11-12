@@ -7,7 +7,46 @@ from algorithms.trend_analysis import(
 from reports.pdf_report import create_pdf_report
 from reports.excel_report import create_excel_report
 
-st.title("📑 消费分析报告")
+st.title(":material/description: 分析报告导出")
+
+st.markdown("""
+<style>
+/* 数据表格浅色主题 */
+[data-testid="stDataFrame"] {
+    --gdg-bg-cell: #FFFFFF;
+    --gdg-bg-cell-medium: #F5F8FA;
+    --gdg-bg-header: #EAF2F8;
+    --gdg-text-dark: #253247;
+    --gdg-text-medium: #253247;
+    --gdg-border-color: #D3E0EA;
+}
+
+/* 页面标题和普通文字 */
+.stApp h1,
+.stApp h2,
+.stApp h3,
+.stApp p,
+.stApp label,
+.stApp span,
+.stApp div {
+    color: #000000;
+}
+
+/* 下载账单模板按钮 */
+.stDownloadButton button {
+    background-color: #EAF2F8 !important;
+    color: #253247 !important;
+    border: 1px solid #D3E0EA !important;
+}
+
+/* 普通按钮 */
+.stButton button {
+    background-color: #EAF2F8 !important;
+    color: #253247 !important;
+    border: 1px solid #D3E0EA !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # 检查是否已经完成必要的分析
 required_results = {
@@ -139,7 +178,7 @@ else:
     )
 
     st.download_button(
-        label="📊 下载 Excel 消费分析报告",
+        label=":material/bar_chart: 下载 Excel 消费分析报告",
         data=excel_buffer,
         file_name="消费行为分析报告.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -147,7 +186,7 @@ else:
     )
 
     # PDF 报告导出
-    if st.button("📄 生成 PDF 消费分析报告", width="stretch"):
+    if st.button(":material/library_books: 生成PDF消费分析报告", width="stretch"):
 
         with st.spinner("正在生成 PDF 报告，请稍候..."):
 
@@ -194,13 +233,13 @@ st.divider()
 st.page_link(
     "pages/clustering.py",
     label="返回消费行为聚类",
-    icon="⬅️",
+    icon=":material/arrow_back:",
     width="stretch"
 )
 
 st.page_link(
     "pages/home.py", 
     label="返回首页", 
-    icon="🏠",
+    icon=":material/home:",
     width="stretch"
 )

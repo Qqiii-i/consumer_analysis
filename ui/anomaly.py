@@ -16,7 +16,7 @@ def show_anomaly_detection(data):
         anomaly_result = compare_anomaly_detection(expense_data)
 
         abnormal_data = anomaly_result[
-            anomaly_result["anomaly_methods"] != "正常"
+            anomaly_result["anomaly_methods"] != "Normal"
         ]
 
         st.write(f"检测到 {len(abnormal_data)} 条统计异常记录")

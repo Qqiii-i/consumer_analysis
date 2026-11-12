@@ -1,26 +1,40 @@
 import streamlit as st
 
-# 首页标题
-st.markdown("# 💰 消费分析中心")
-st.caption("PERSONAL FINANCE · ANALYTICS PLATFORM")
-
-st.write("欢迎使用个人消费行为分析平台。请选择需要使用的功能。")
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <h1 style="font-size: 45px; color: black;">
+            消费分析中心
+        </h1>
+        <p style="font-size: 15px; letter-spacing: 2px; color: #416482;">
+            Personal Finance Analytics Platform
+        </p>
+        <p style="font-size: 19px; color: black;">
+            欢迎使用个人消费行为分析平台。<br>请选择需要使用的功能。
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.divider()
 
 # 功能入口
-st.markdown("## 功能导航")
+st.markdown(
+    "<h2 style='color: black;'>功能导航</h2>",
+    unsafe_allow_html=True
+)
 
 features = [
-    ("📂", "数据导入与清洗", "导入账单并整理消费数据"),
-    ("🏷️", "自动消费分类", "识别消费记录所属类别"),
-    ("📈", "经济学分析指标", "分析恩格尔系数、储蓄率等指标"),
-    ("📉", "CPI 与个人消费分析", "分析物价变化与个人消费"),
-    ("📊", "消费统计与趋势分析", "查看消费结构和变化趋势"),
-    ("🔮", "消费预测", "预测未来消费情况"),
-    ("🔍", "异常消费检测", "识别异常消费记录"),
-    ("🧩", "消费行为聚类", "分析不同消费行为特征"),
-    ("📄", "分析报告导出", "生成 Excel 和 PDF 分析报告"),
+    ("folder_open", "数据导入与清洗", "导入账单并整理消费数据"),
+    ("sell", "自动消费分类", "识别消费记录所属类别"),
+    ("query_stats", "经济学分析指标", "分析恩格尔系数、储蓄率等指标"),
+    ("trending_up", "CPI 与个人消费分析", "分析物价变化与个人消费"),
+    ("pie_chart", "消费统计与趋势分析", "查看消费结构和变化趋势"),
+    ("monitoring", "消费预测", "预测未来消费情况"),
+    ("search", "异常消费检测", "识别异常消费记录"),
+    ("groups", "消费行为聚类", "分析不同消费行为特征"),
+    ("description", "分析报告导出", "生成Excel和PDF分析报告"),
 ]
 
 # 固定三列，所有卡片统一跟随最高卡片的高度
@@ -58,7 +72,7 @@ a[data-testid="stPageLink-NavLink"] {
     padding: 22px;
     box-sizing: border-box;
 
-    background: #ffffff;
+    background: #D3E6F0;
     border: 1px solid #e8edf3;
     border-radius: 14px;
 
@@ -73,7 +87,6 @@ a[data-testid="stPageLink-NavLink"] > div {
 }
 
 /* 标题 */
-/* 标题 */
 a[data-testid="stPageLink-NavLink"] p:first-child {
     margin: 0 0 12px 0;
     line-height: 1.5;
@@ -84,7 +97,7 @@ a[data-testid="stPageLink-NavLink"] p:first-child {
 
 a[data-testid="stPageLink-NavLink"] p:first-child strong {
     display: inline;
-    font-size: 20px;
+    font-size: 18px;
     color: #253247;
     font-weight: 700;
     white-space: normal !important;
@@ -102,6 +115,11 @@ a[data-testid="stPageLink-NavLink"] p:last-child {
     white-space: normal;
     overflow-wrap: break-word;
     word-break: normal;
+}
+
+/* 放大功能卡片图标 */
+a[data-testid="stPageLink-NavLink"] [data-testid="stIconMaterial"] {
+    font-size: 24px !important;
 }
 
 /* 鼠标悬停 */
@@ -135,6 +153,7 @@ for i, (icon, title, description) in enumerate(features):
     with cols[i % 3]:
         st.page_link(
             page_paths[title],
-            label=f"**{icon} {title}**\n\n{description}",
+            label=f"**{title}**\n\n{description}",
+            icon=f":material/{icon}:",
             use_container_width=True
         )

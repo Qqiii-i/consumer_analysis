@@ -171,7 +171,7 @@ def show_classification(data):
             transfer_data = edited_data.loc[transfer_mask].copy()
 
             st.divider()
-            st.subheader("💸 待处理转账记录")
+            st.subheader(":material/payments: 待处理转账记录")
 
             if not transfer_data.empty:
                 st.caption(
