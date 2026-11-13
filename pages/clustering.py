@@ -3,7 +3,6 @@ from ui.clustering import show_clustering
 
 st.title(":material/groups: 消费行为聚类")
 
-
 st.markdown("""
 <style>
 /* 数据表格浅色主题 */
@@ -58,20 +57,24 @@ if "transaction_data" not in st.session_state:
 
 else:
     data = st.session_state["transaction_data"].copy()
+    classified_data = st.session_state["classified_data"]
 
-    # 使用最终分类结果
-    if "classified_data" in st.session_state:
-        classified_data = st.session_state["classified_data"]
+    # 根据交易编号合并最新分类结果
+    category_mapping = classified_data.set_index(
+        "transaction_id"
+    )["final_category"]
 
-        category_mapping = classified_data.set_index(
-            "transaction_id"
-        )["final_category"]
+    data["category"] = (
+        data["transaction_id"]
+        .map(category_mapping)
+        .fillna(data["category"])
+    )
 
-        data["category"] = (
-            data["transaction_id"]
-            .map(category_mapping)
-            .fillna(data["category"])
-        )
+    # 排除未分类交易
+    data = data[
+        data["category"].notna()
+        & (data["category"] != "未分类")
+    ].copy()
 
     # 执行消费行为聚类
     cluster_summary, category_summary, silhouette = show_clustering(data)
@@ -79,7 +82,7 @@ else:
     st.session_state["cluster_summary"] = cluster_summary.copy()
     st.session_state["category_summary"] = category_summary.copy()
     st.session_state["silhouette"] = silhouette
-
+    
 st.divider()
 
 st.page_link(

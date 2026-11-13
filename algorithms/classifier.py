@@ -62,8 +62,7 @@ def train_nb_classifier(data):
         (data["transaction_type"] == "支出")
         & data["description"].notna()
         & data["category"].notna()
-        & (~data["category"].isin(["未分类", ""]))
-    ].copy()
+        & (~data["category"].isin(["未分类", "其他", ""]))    ].copy()
 
     train_data["description"] = (
         train_data["description"].astype(str)

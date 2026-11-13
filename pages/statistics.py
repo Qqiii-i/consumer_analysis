@@ -73,6 +73,12 @@ else:
         .fillna(data["category"])
     )
 
+    # 排除未分类和缺失分类的交易记录
+    data = data[
+        data["category"].notna()
+        & (data["category"] != "未分类")
+    ].copy()
+
     # 执行统计分析
     (
         category_stats,

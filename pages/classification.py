@@ -50,6 +50,11 @@ if "transaction_data" not in st.session_state:
 else:
     data = st.session_state["transaction_data"]
 
+    st.info(
+        "提示：仍属于「未分类」的交易记录不会参与后续的数据分析。请尽量完善交易分类，以获得更准确的分析结果。"
+        "Final Category属于可人工修改模块。"
+    )
+
     # 执行自动消费分类
     classified_data = show_classification(data)
 

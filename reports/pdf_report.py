@@ -110,7 +110,7 @@ def create_pdf_report(
 
     table.setStyle(TableStyle([
         ("FONTNAME", (0, 0), (-1, -1), "SimHei"),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.white),
         ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
         ("FONTSIZE", (0, 0), (-1, -1), 9),
         ("PADDING", (0, 0), (-1, -1), 7),
@@ -159,7 +159,7 @@ def create_pdf_report(
 
             cpi_table.setStyle(TableStyle([
                 ("FONTNAME", (0, 0), (-1, -1), "SimHei"),
-                ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                ("BACKGROUND", (0, 0), (-1, 0), colors.white),
                 ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
                 ("FONTSIZE", (0, 0), (-1, -1), 7),
                 ("PADDING", (0, 0), (-1, -1), 4),
@@ -270,7 +270,7 @@ def create_pdf_report(
 
         trend_table.setStyle(TableStyle([
             ("FONTNAME", (0, 0), (-1, -1), "SimHei"),
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+            ("BACKGROUND", (0, 0), (-1, 0), colors.white),
             ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
             ("FONTSIZE", (0, 0), (-1, -1), 8),
             ("PADDING", (0, 0), (-1, -1), 5),
@@ -441,7 +441,7 @@ def create_pdf_report(
 
         category_table.setStyle(TableStyle([
             ("FONTNAME", (0, 0), (-1, -1), "SimHei"),
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+            ("BACKGROUND", (0, 0), (-1, 0), colors.white),
             ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
             ("FONTSIZE", (0, 0), (-1, -1), 8),
             ("PADDING", (0, 0), (-1, -1), 5),
@@ -474,7 +474,7 @@ def create_pdf_report(
 
         cluster_table.setStyle(TableStyle([
             ("FONTNAME", (0, 0), (-1, -1), "SimHei"),
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+            ("BACKGROUND", (0, 0), (-1, 0), colors.white),
             ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
             ("FONTSIZE", (0, 0), (-1, -1), 8),
             ("PADDING", (0, 0), (-1, -1), 5),

@@ -87,6 +87,12 @@ else:
         .fillna(data["category"])
     )
 
+    # 分析数据中排除未分类交易
+    data = data[
+        data["category"].notna()
+        & (data["category"] != "未分类")
+    ].copy()
+
     # 执行经济学指标分析，并保存报告所需结果
     engel, apc, saving_rate, mpc = show_economics(data)
 

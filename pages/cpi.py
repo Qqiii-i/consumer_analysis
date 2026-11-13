@@ -57,6 +57,24 @@ if "transaction_data" not in st.session_state:
 
 else:
     data = st.session_state["transaction_data"].copy()
+    classified_data = st.session_state["classified_data"]
+
+    # 根据交易编号合并最新分类结果
+    category_mapping = classified_data.set_index(
+        "transaction_id"
+    )["final_category"]
+
+    data["category"] = (
+        data["transaction_id"]
+        .map(category_mapping)
+        .fillna(data["category"])
+    )
+
+    # 排除未分类交易
+    data = data[
+        data["category"].notna()
+        & (data["category"] != "未分类")
+    ].copy()
 
     cpi_results = show_cpi_analysis(data)
 

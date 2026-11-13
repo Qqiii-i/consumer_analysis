@@ -3,7 +3,6 @@ from ui.anomaly import show_anomaly_detection
 
 st.title(":material/search: 异常消费检测")
 
-
 st.markdown("""
 <style>
 /* 数据表格浅色主题 */
@@ -41,7 +40,6 @@ st.markdown("""
     border-radius: 8px;
 }
 
-
 /* Upload 上传按钮 */
 [data-testid="stFileUploader"] button {
     background-color: #EAF2F8 !important;
@@ -58,26 +56,30 @@ if "transaction_data" not in st.session_state:
 
 else:
     data = st.session_state["transaction_data"].copy()
+    classified_data = st.session_state["classified_data"]
 
-    # 使用最终分类结果
-    if "classified_data" in st.session_state:
-        classified_data = st.session_state["classified_data"]
+    # 根据交易编号合并最新分类结果
+    category_mapping = classified_data.set_index(
+        "transaction_id"
+    )["final_category"]
 
-        category_mapping = classified_data.set_index(
-            "transaction_id"
-        )["final_category"]
+    data["category"] = (
+        data["transaction_id"]
+        .map(category_mapping)
+        .fillna(data["category"])
+    )
 
-        data["category"] = (
-            data["transaction_id"]
-            .map(category_mapping)
-            .fillna(data["category"])
-        )
+    # 排除未分类交易
+    data = data[
+        data["category"].notna()
+        & (data["category"] != "未分类")
+    ].copy()
 
     # 执行异常消费检测
     abnormal_data = show_anomaly_detection(data)
 
     st.session_state["abnormal_data"] = abnormal_data.copy()
-
+    
 st.divider()
 
 st.page_link(

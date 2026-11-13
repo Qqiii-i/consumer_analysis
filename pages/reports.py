@@ -90,15 +90,21 @@ else:
         .fillna(data["category"])
     )
 
+    # 创建分析专用数据，排除未分类交易
+    analysis_data = data[
+        data["category"].notna()
+        & (data["category"] != "未分类")
+    ].copy()
+
     # 计算收入、支出和结余
-    income = data.loc[
-        data["transaction_type"] == "收入", "amount"
+    income = analysis_data.loc[
+        analysis_data["transaction_type"] == "收入", "amount"
     ].sum()
 
-    expense = data.loc[
-        data["transaction_type"] == "支出", "amount"
+    expense = analysis_data.loc[
+        analysis_data["transaction_type"] == "支出", "amount"
     ].sum()
-
+    
     balance = income - expense
 
     # 获取经济学指标
@@ -207,7 +213,7 @@ else:
                 bar_fig,
                 cpi_results=cpi_results,
                 consumption_insights=generate_consumption_insights(
-                    st.session_state["transaction_data"]
+                    analysis_data
                 ),
                 forecast_month=forecast_month,
                 forecast_amount=forecast_amount,
