@@ -10,7 +10,7 @@
 
 项目地址：
 - GitHub：https://github.com/Qqiii-i/consumer_analysis
-- 在线体验：[填写你的 Streamlit Cloud 公网网址]
+- 在线体验：https://consumeranalysis-adyfksfhjwzyqtnroem9hn.streamlit.app/
 
 ## 二、核心功能
 
