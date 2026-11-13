@@ -49,6 +49,16 @@ def test_moving_average_invalid_window():
     with pytest.raises(ValueError):
         calculate_moving_average(data, window=0)
 
+def test_moving_average_insufficient_data():
+    data = pd.DataFrame({
+        "month": ["2026-01"],
+        "total_expense": [100]
+    })
+
+    result = calculate_moving_average(data, window=2)
+
+    assert pd.isna(result.loc[0, "moving_average"])
+
 def test_calculate_expense_by_period():
     data = pd.DataFrame({
         "transaction_date": [
@@ -130,6 +140,23 @@ def test_calculate_expense_distribution():
 
     assert result["transaction_count"].tolist() == [1, 1, 1, 1]
     assert result["amount_range"].astype(str).tolist() == [
-        "0-50元", "50-100元", "100-500元", "500元以上"
+        "CNY 0-50",
+        "CNY 50-100",
+        "CNY 100-500",
+        "Above CNY 500"
     ]
     assert result["period"].tolist() == ["2026-01"] * 4
+
+def test_moving_average_non_integer_window():
+    import pytest
+
+    data = pd.DataFrame({
+        "month": ["2026-01", "2026-02"],
+        "total_expense": [100, 200]
+    })
+
+    with pytest.raises(
+        ValueError,
+        match="移动平均窗口必须为正整数"
+    ):
+        calculate_moving_average(data, window=1.5)
